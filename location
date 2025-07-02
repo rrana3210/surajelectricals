@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Send My Location</title>
+</head>
+<body>
+  <h2>Click below to send your location</h2>
+  <button onclick="sendLocation()">Send Location</button>
+
+  <script>
+    function sendLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          const redirectURL = `https://wa.me/?text=My%20location%20is%20Lat:${lat}%20Lng:${lng}`;
+          window.location.href = redirectURL;
+        }, function(error) {
+          alert("Unable to access location.");
+        });
+      } else {
+        alert("Geolocation not supported.");
+      }
+    }
+  </script>
+</body>
+</html>
