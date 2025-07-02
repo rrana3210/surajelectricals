@@ -4,7 +4,7 @@
   <title>Send Location</title>
 </head>
 <body>
-  <h2>Click to send your location</h2>
+  <h2>Click to sendd your location</h2>
   <button onclick="sendLocation()">Send My Location</button>
   <p id="status"></p>
 
@@ -22,21 +22,22 @@
         (position) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
-          
-          // Replace this URL with your Google Apps Script web app URL
-          const scriptURL = "https://script.google.com/macros/s/AKfycby3RTVDuB3kLOJXQUC4g6EwcE2vGA65kqWh_K-EjeLUDIPB_YgUbjRkBv5X7Lyp-j7Y/exec";
-          
+
+          const scriptURL = "https://script.google.com/macros/s/AKfycbydCUuvAEN5skgjVAvphAakL21ZHuCqzbqlSKRhy17vKUHakcsma4srQVkb4ZoT-rRe/exec";
+
           fetch(`${scriptURL}?lat=${lat}&lng=${lng}`, {
-            method: "POST"
+            method: "POST",
+            mode: "no-cors"
           })
-          .then(res => {
+          .then(() => {
             status.textContent = "Location sent successfully!";
           })
-          .catch(err => {
+          .catch((err) => {
             status.textContent = "Failed to send location.";
+            console.error(err);
           });
         },
-        (error) => {
+        () => {
           status.textContent = "Unable to access location.";
         }
       );
@@ -44,4 +45,3 @@
   </script>
 </body>
 </html>
-  
