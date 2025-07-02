@@ -1,47 +1,95 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Send Location</title>
+  <meta charset="utf-8">
+  <title>Location | Suraj Electricals</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- reuse your existing stylesheet links -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/main.css" rel="stylesheet">
+  <link href="css/responsive.css" rel="stylesheet">
 </head>
 <body>
-  <h2>Click to senddd your location</h2>
-  <button onclick="sendLocation()">Send My Location</button>
-  <p id="status"></p>
+  <!-- Navbar (replicate from index) -->
+  <nav class="navbar navbar-inverse">
+    <div class="container">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="index.html">
+          <img src="images/SE-logo.png" alt="Suraj Electricals Logo">
+        </a>
+      </div>
+      <div class="navbar-header pull-right">
+        <a class="navbar-brand" href="https://surajelectricals.com/" target="_blank">
+          Suraj Electricals
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container" style="margin-top:50px; max-width:500px;">
+    <h2>Share Your Details & Location</h2>
+    <form id="dataForm">
+      <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" class="form-control" id="name" placeholder="Enter your name" required>
+      </div>
+      <div class="form-group">
+        <label for="age">Age:</label>
+        <input type="number" class="form-control" id="age" placeholder="Enter your age" required>
+      </div>
+      <button type="button" id="getLocationBtn" class="btn btn-primary">
+        Get My Location
+      </button>
+    </form>
+    <p id="status" style="margin-top:10px;"></p>
+  </div>
 
   <script>
-    function sendLocation() {
-      const status = document.getElementById("status");
-      if (!navigator.geolocation) {
-        status.textContent = "Geolocation not supported.";
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzPaUBNmCG6Pma1cppVac7LrDgyj3eo4HNHoQWhFpCXdvbkz1q_J7Ye0m-n0_ybQqx7/exec';
+
+    async function sendData(lat, lng) {
+      const name = document.getElementById('name').value.trim();
+      const age = document.getElementById('age').value;
+      if (!name || !age) {
+        document.getElementById('status').textContent = '⚠️ Please enter both name and age.';
         return;
       }
 
-      status.textContent = "Getting your location…";
+      const params = new URLSearchParams({ name, age, lat, lng });
+      document.getElementById('status').textContent = '📤 Sending location…';
 
+      try {
+        await fetch(`${scriptURL}?${params}`, {
+          method: 'POST',
+          mode: 'no-cors'
+        });
+        document.getElementById('status').textContent = `✅ Location sent (${new Date().toLocaleTimeString()})`;
+      } catch (err) {
+        console.error(err);
+        document.getElementById('status').textContent = '❌ Failed to send location.';
+      }
+    }
+
+    function requestLocation() {
+      if (!navigator.geolocation) {
+        document.getElementById('status').textContent = 'Geolocation not supported.';
+        return;
+      }
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-
-          const scriptURL = "https://script.google.com/macros/s/AKfycbzPaUBNmCG6Pma1cppVac7LrDgyj3eo4HNHoQWhFpCXdvbkz1q_J7Ye0m-n0_ybQqx7/exec";
-
-          fetch(`${scriptURL}?lat=${lat}&lng=${lng}`, {
-            method: "POST",
-            mode: "no-cors"
-          })
-          .then(() => {
-            status.textContent = "Location sent successfully!";
-          })
-          .catch((err) => {
-            status.textContent = "Failed to send location.";
-            console.error(err);
-          });
-        },
-        () => {
-          status.textContent = "Unable to access location.";
-        }
+        pos => sendData(pos.coords.latitude, pos.coords.longitude),
+        () => document.getElementById('status').textContent = 'Unable to access location.'
       );
     }
+
+    document.getElementById('getLocationBtn').addEventListener('click', () => {
+      requestLocation();
+      // auto-send every 5 minutes after initial click
+      setInterval(requestLocation, 300000);
+    });
   </script>
+
+  <!-- include your JS files to maintain theme functionality -->
+  <script src="js/jquery.js"></script>
+  <script src="js/bootstrap.min.js"></script>
 </body>
 </html>
