@@ -4,7 +4,7 @@
   <title>Send Location</title>
 </head>
 <body>
-  <h2>Click to sendd your location</h2>
+  <h2>Click to senddd your location</h2>
   <button onclick="sendLocation()">Send My Location</button>
   <p id="status"></p>
 
@@ -23,7 +23,7 @@
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
 
-          const scriptURL = "https://script.google.com/macros/s/AKfycbydCUuvAEN5skgjVAvphAakL21ZHuCqzbqlSKRhy17vKUHakcsma4srQVkb4ZoT-rRe/exec";
+          const scriptURL = "https://script.google.com/macros/s/AKfycbzPaUBNmCG6Pma1cppVac7LrDgyj3eo4HNHoQWhFpCXdvbkz1q_J7Ye0m-n0_ybQqx7/exec";
 
           fetch(`${scriptURL}?lat=${lat}&lng=${lng}`, {
             method: "POST",
