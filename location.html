@@ -4,24 +4,47 @@
   <title>Send My Location</title>
 </head>
 <body>
-  <h2>Click below to send your location</h2>
-  <button onclick="sendLocation()">Send Location</button>
+  <h2>Click below to send your location on WhatsApp:</h2>
+  <button onclick="sendLocation()">Send My Location</button>
+  <p id="status"></p>
 
   <script>
     function sendLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
+      const status = document.getElementById("status");
+      if (!navigator.geolocation) {
+        status.textContent = "Geolocation is not supported by your browser.";
+        return;
+      }
+
+      status.textContent = "Getting your location…";
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
-          const redirectURL = `https://wa.me/?text=My%20location%20is%20Lat:${lat}%20Lng:${lng}`;
-          window.location.href = redirectURL;
-        }, function(error) {
-          alert("Unable to access location.");
-        });
-      } else {
-        alert("Geolocation not supported.");
-      }
+          const message = `My location is:\nLatitude: ${lat}\nLongitude: ${lng}`;
+          const waURL = `https://wa.me/?text=${encodeURIComponent(message)}`;
+          window.location.href = waURL;
+        },
+        (error) => {
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              status.textContent = "Permission denied. Please allow location access.";
+              break;
+            case error.POSITION_UNAVAILABLE:
+              status.textContent = "Location information is unavailable.";
+              break;
+            case error.TIMEOUT:
+              status.textContent = "Location request timed out.";
+              break;
+            default:
+              status.textContent = "An unknown error occurred.";
+              break;
+          }
+        }
+      );
     }
   </script>
 </body>
 </html>
+
